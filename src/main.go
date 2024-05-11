@@ -19,7 +19,7 @@ func main() {
 }
 
 func parent() {
-	cmd := exec.Command("/proc/self/exe", append([]string{"child"}, os.Args[2:]...)...)
+	cmd := exec.Command(os.Args[0], append([]string{"child"}, os.Args[2:]...)...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS,
 	}
@@ -34,10 +34,11 @@ func parent() {
 }
 
 func child() {
-	must(syscall.Mount("rootfs", "rootfs", "", syscall.MS_BIND, ""))
-	must(os.MkdirAll("rootfs/oldrootfs", 0700))
-	must(syscall.PivotRoot("rootfs", "rootfs/oldrootfs"))
-	must(os.Chdir("/"))
+	// must(syscall.Mount("rootfs", "rootfs", "", syscall.MS_BIND, ""))
+	// must(os.MkdirAll("rootfs/oldrootfs", 0700))
+	// must(syscall.PivotRoot("rootfs", "rootfs/oldrootfs"))
+	// must(os.Chdir("/"))
+	fmt.Println("child running")
 
 	cmd := exec.Command(os.Args[2], os.Args[3:]...)
 	cmd.Stdin = os.Stdin
