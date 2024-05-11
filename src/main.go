@@ -38,7 +38,11 @@ func child() {
 	// must(os.MkdirAll("rootfs/oldrootfs", 0700))
 	// must(syscall.PivotRoot("rootfs", "rootfs/oldrootfs"))
 	// must(os.Chdir("/"))
-	fmt.Println("child running")
+	fmt.Printf("child running %v as PID %d\n", os.Args[2:], os.Getpid())
+
+	if err := syscall.Sethostname([]byte("container")); err != nil {
+		panic(fmt.Sprintf("Sethostname: %v", err))
+	}
 
 	cmd := exec.Command(os.Args[2], os.Args[3:]...)
 	cmd.Stdin = os.Stdin
