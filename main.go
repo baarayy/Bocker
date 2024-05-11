@@ -32,7 +32,7 @@ func parent() {
 	if err := cmd.Start(); err != nil {
 		panic("start parent error" + err.Error())
 	}
-
+	log.Printf("container PID: %d", cmd.Process.Pid)
 	if err := putIface(cmd.Process.Pid); err != nil {
 		panic("putIface error" + err.Error())
 	}
