@@ -22,7 +22,20 @@ To run the project, follow these steps:
    cd Bocker
    ```
 
-3. Build the project using `make`:
+3. ## Network
+   set DNS resolver in container:
+
+```sh
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+```
+
+set IP forward in host:
+
+```sh
+sysctl -w net.ipv4.ip_forward=1
+```
+
+4. Build the project using `make`:
 
    ```sh
    make all
