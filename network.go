@@ -28,32 +28,32 @@ var (
 	vethPeerAddr = "10.88.37.22/24"
 )
 
-func createBridge() error {
-	_, err := net.InterfaceByName(bridgeName)
-	if err == nil {
-		return nil
+func createBridge() (netlink.Link, error) {
+	if br, err := netlink.LinkByName(bridgeName); err == nil {
+		return br, nil
 	}
+
 	la := netlink.NewLinkAttrs()
 	la.Name = bridgeName
 	br := &netlink.Bridge{LinkAttrs: la}
-
 	if err := netlink.LinkAdd(br); err != nil {
-		return fmt.Errorf("Bridge create failed: %v", err)
+		return nil, fmt.Errorf("bridge creation: %v", err)
 	}
 
 	addr, err := netlink.ParseAddr(bridgeIP)
 	if err != nil {
-		return fmt.Errorf("ParseAddr failed: %v", err)
+		return nil, fmt.Errorf("parse address %s: %v", bridgeIP, err)
 	}
 
 	if err := netlink.AddrAdd(br, addr); err != nil {
-		return fmt.Errorf("AddrAdd failed: %v", err)
+		return nil, fmt.Errorf("br add addr err: %v", err)
 	}
 
+	// sets up bridge ( ip link set dev container0 up )
 	if err := netlink.LinkSetUp(br); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return br, nil
 }
 func createVethPair(pid int) (netlink.Link, error) {
 	// get bridge to set as master for one side of veth-pair
@@ -101,23 +101,25 @@ func createVethPair(pid int) (netlink.Link, error) {
 }
 
 func putIface(pid int) error {
-	// iptablesRules := getIptablesRules(bridgeIP, hostDevice, bridgeName)
-	// if err := setIptables(iptablesRules); err != nil {
-	// 	return fmt.Errorf("set iptables err: %v", err)
-	// }
+	iptablesRules := getIptableRules(bridgeIP, hostDevice, bridgeName)
+	if err := setIptables(iptablesRules); err != nil {
+		return fmt.Errorf("set iptables err: %v", err)
+	}
 
-	// br, err := createBridge()
-	// if err != nil {
-	// 	return fmt.Errorf("create bridge err: %v", err)
-	// }
-	// veth, err := createVethPair(pid)
-	// if err != nil {
-	// 	return fmt.Errorf("create veth pair err: %v", err)
-	// }
+	br, err := createBridge()
+	if err != nil {
+		return fmt.Errorf("create bridge err: %v", err)
+	}
+	veth, err := createVethPair(pid)
+	if err != nil {
+		return fmt.Errorf("create veth pair err: %v", err)
+	}
 
-	// if err := netlink.LinkSetMaster(veth, br.(*netlink.Bridge)); err != nil {
-	// 	return fmt.Errorf("link set master err: %v", err)
-	// }
+	if err := netlink.LinkSetMaster(veth, br.(*netlink.Bridge)); err != nil {
+		return fmt.Errorf("link set master err: %v", err)
+	}
+
+	return nil
 
 	return nil
 }
