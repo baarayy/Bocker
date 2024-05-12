@@ -7,3 +7,6 @@ build:
 
 run: 
 	sudo ./bocker run /bin/bash 
+
+.PHONY: all
+all: run
