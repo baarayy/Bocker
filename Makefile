@@ -9,4 +9,4 @@ run:
 	sudo ./bocker run /bin/bash 
 
 .PHONY: all
-all: run
+all: config build run
