@@ -57,7 +57,7 @@ func child() {
 }
 
 func setup() {
-	if err := syscall.Sethostname([]byte("container")); err != nil {
+	if err := syscall.Sethostname([]byte("bocker")); err != nil {
 		panic(fmt.Sprintf("Sethostname: %v\n", err))
 	}
 
