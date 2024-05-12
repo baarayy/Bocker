@@ -33,10 +33,6 @@ func parent() {
 		panic("start parent error" + err.Error())
 	}
 	log.Printf("container PID: %d", cmd.Process.Pid)
-	if err := putIface(cmd.Process.Pid); err != nil {
-		panic("putIface error" + err.Error())
-	}
-
 	if err := cmd.Wait(); err != nil {
 		panic("wait error" + err.Error())
 	}
@@ -54,7 +50,7 @@ func child() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	setup()
+	//setup()
 	if err := cmd.Run(); err != nil {
 		fmt.Println("ERROR: " , err.Error())
 		os.Exit(1)

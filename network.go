@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net"
+	"time"
 
 	"github.com/vishvananda/netlink"
 )
@@ -81,4 +83,28 @@ func putIface(pid int) error {
 		return fmt.Errorf("createVethPair failed: %v", err)
 	}
 	return nil
+}
+
+func waitForIfac() (netlink.Link , error) {
+	log.Printf("Waiting for %s network interface to appear...", bridgeName)
+	start := time.Now()
+	for {
+		fmt.Print(".")
+		if time.Since(start) > 5 * time.Second {
+			fmt.Printf("\n")
+			return nil , fmt.Errorf("failed to find venth interface in 5 seconds")
+		}
+		lst , err := netlink.LinkList()
+		if err != nil {
+			fmt.Printf("\n")
+			return nil , err
+		}
+		for _,l := range lst {
+			if l.Type() == "veth" {
+				fmt.Printf("\n")
+				return l , nil
+			}
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 }
