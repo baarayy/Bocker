@@ -1,5 +1,6 @@
 # Bocker
-![Bocker](https://pbs.twimg.com/media/GKQxYeObIAA3Ren.jpg)
+
+![Bocker](https://i.ibb.co/sCLfMv8/sodasweet-is-ded-by-daisydog3-debokz7.jpg)
 
 Bocker is a simple container written in Go.
 
